@@ -1,26 +1,43 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine.
-# See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  say-hello:
-    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
-    docker:
-      - image: cimg/base:stable
-    # Add steps to the job
-    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+  build:
+   machine:
+      image: ubuntu-2204:2022.10.2
+      resource_class: large
     steps:
       - checkout
       - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
+          name: "Setup rust code"
+          command: |
+            sudo apt-get update -y
+            sudo apt-get install -y ninja-build zstd
+            git clone https://github.com/rust-lang/rust.git
+            cd rust
+            cp ../patches/v2/config.toml .
+            cp ../patches/v2/x86_64_unknown_linux_gnu.rs compiler\rustc_target\src\spec\x86_64_unknown_linux_gnu.rs
+      - run:
+          name: "Build rustc-x86-v2"
+          command: |
+            cd rust
+            ./x.py build compiler/rustc
+      - run:
+          name: "print rustc-x86-64-v2 flags"
+          command: |
+            ./rust/build/x86_64-unknown-linux-gnu/stage2/bin/rustc --print=cfg
+          when: always
+      - run:
+          name: "tar rustc-x86-64-v2"
+          command: |
+            tar --zstd -cf rustc-x86-64-v2.tar.zst .rust/build/x86_64-unknown-linux-gnu/stage2
+          when: always
+      - store_artifacts:
+          path: rustc-x86-64-v2.tar.zst
+          when: always
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  say-hello-workflow:
+  build-x86-64-v2:
     jobs:
       - say-hello
