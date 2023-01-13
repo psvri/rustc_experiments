@@ -40,4 +40,4 @@ jobs:
 workflows:
   build-x86-64-v2:
     jobs:
-      - say-hello
+      - build
