@@ -30,6 +30,7 @@ jobs:
           cp ../patches/v0/config.toml .
 
       - name: Build rust
+        working-directory: ./rust
         run: |
           ./x.py build compiler/rustc
           
