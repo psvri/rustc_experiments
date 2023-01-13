@@ -1,0 +1,7 @@
+[build]
+# When compiling from source, you almost always want a full stage 2 build
+build-stage = 2
+
+[llvm]
+# Most users installing from source want to build all parts of the project from source, not just rustc itself.
+download-ci-llvm = false
