@@ -2,7 +2,7 @@ version: 2.1
 
 jobs:
   build:
-   machine:
+    machine:
       image: ubuntu-2204:2022.10.2
       resource_class: large
     steps:
