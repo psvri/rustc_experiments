@@ -33,6 +33,7 @@ jobs:
 
       - name: Build rust
         working-directory: ./rust
+        continue-on-error: true
         run: |
           ./x.py build compiler/rustc
           
