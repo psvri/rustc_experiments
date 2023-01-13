@@ -25,6 +25,8 @@ jobs:
       
       - name: Setup rust code
         run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ninja-build
           git clone https://github.com/rust-lang/rust.git
           cd rust
           cp ../patches/v0/config.toml .
